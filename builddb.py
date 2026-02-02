@@ -3,7 +3,7 @@ import os, gzip,json
 
 archives = []
 
-for thing in os.listdir('.'):
+for thing in os.listdir('archives'):
     if thing.endswith('.txt.gz'):
         archives.append(thing)
 
