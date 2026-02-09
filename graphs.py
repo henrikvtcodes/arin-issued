@@ -67,11 +67,7 @@ def graph_issued_asns(data: pd.DataFrame):
 
 def main():
     # data = pd.read_csv("summary.csv").sort_values(by=['date'], ascending=True)
-    raw = pd.read_csv("summary.csv")
-
-    raw['dt'] = pd.to_datetime(raw['date'], utc=True, errors='coerce')
-    raw['dt'] = raw['dt'].dt.tz_convert('America/New_York')
-    data = raw.sort_values('dt').copy()
+    data = pd.read_csv("summary.csv")
 
     asn_add = data.loc[(data['resourceType'].str.upper() == 'ASN') & (data['action'].str.upper() == 'ADD'), ['dt']].dropna().copy()
     asn_add['day'] = asn_add['dt'].dt.floor('D')

@@ -10,7 +10,6 @@ for thing in os.listdir('archives'):
 print(f"Found {archives}")
 
 summaryColumns = ['year','month','date','action','resourceType','resource']
-summaries = pd.DataFrame(columns=summaryColumns)
 
 def make_row(year, month, date, action, resource_type, resource):
     report = {
@@ -24,12 +23,13 @@ def make_row(year, month, date, action, resource_type, resource):
     return report
 
 def make_data():
+    summaries = pd.DataFrame(columns=summaryColumns)
 
     for thing in archives:
         yearmonth = thing.split('.')[0]
         year = yearmonth.split('-')[0]
         month = yearmonth.split('-')[1]
-        with gzip.open(thing, 'rt') as f:
+        with gzip.open(f"archives/{thing}", 'rt') as f:
             reportStrs = f.read().split("-------------- next part --------------")
             for reportStr in reportStrs:
                 rows = []
@@ -56,6 +56,10 @@ def make_data():
 
     with open("summary.json", "w") as f:
         f.write(summaries.to_json(orient='records', indent=2))
+
+    summaries['dt'] = pd.to_datetime(summaries['date'], utc=True, errors='coerce')
+    summaries['dt'] = summaries['dt'].dt.tz_convert('America/New_York')
+    summaries = summaries.sort_values('dt').copy()
 
     summaries.to_csv('summary.csv', index=False)
 
